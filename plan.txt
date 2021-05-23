@@ -1,0 +1,18 @@
+a big example wallet 0xa575d344050a12e6c1ccf5a5971342b67592c63c
+my api key G6NT89FAW872R3KGJD8EU9YD9FEYDBNX78
+drc address 0xb78B3320493a4EFaa1028130C5Ba26f0B6085Ef8
+
+Use the given token holder addresses and balances as a .csv file
+Go through the list. Only 2.7k holders.
+Use - https://api.etherscan.io/api?module=account&action=tokentx&contractaddress=0xb78B3320493a4EFaa1028130C5Ba26f0B6085Ef8&address=0xa575d344050a12e6c1ccf5a5971342b67592c63c&startblock=0&endblock=999999999&sort=asc&apikey=G6NT89FAW872R3KGJD8EU9YD9FEYDBNX78
+
+^BUT MODIFY ADDRESS and update with all 2.7k addresses.
+to show all token transfer events for all accounts.
+
+
+This is the same as above but the API call has been sectioned into pieces.
+/apimodule=account&action=tokentx
+&contractaddress=0xb78B3320493a4EFaa1028130C5Ba26f0B6085Ef8
+&address=0xa575d344050a12e6c1ccf5a5971342b67592c63c
+&startblock=0&endblock=999999999&sort=asc
+&apikey=G6NT89FAW872R3KGJD8EU9YD9FEYDBNX78
