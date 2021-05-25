@@ -3,7 +3,7 @@ library(httr)
 library(rlist)
 library(jsonlite)
 library(dplyr)
-library(bit64)
+library(anytime)
 
 #VARIABLES --------------------------------------------------------------------
 drc_address <- "0xb78B3320493a4EFaa1028130C5Ba26f0B6085Ef8"
@@ -11,16 +11,17 @@ api_key <- "G6NT89FAW872R3KGJD8EU9YD9FEYDBNX78"
 acct_piece <- "api?module=account&action=tokentx"
 contr_piece <- "&contractaddress="
 wall_line <- "&address="
-blocks_sort <- "&startblock=0&endblock=999999999&sort=asc"
+start <- "&startblock="
+end <- "&endblock="
 full_api <- "&apikey=G6NT89FAW872R3KGJD8EU9YD9FEYDBNX78"
 growin_boi <- data.frame()
 
 #CAPTURE-ADDRESSES-------------------------------------------------------------
-holders <- read.csv(file = '/Documents/Dracula Whale Hunter/DRC_holders.csv',
+holders <- read.csv(file = '/Documents/Dracula Whale Hunter/DRC_holders2.csv',
                     colClasses = "character")
 
 #TXT-PROGRESS-BAR-INIT---------------------------------------------------------
-n_iter <- 2617 # Number of iterations of the loop
+n_iter <- 150L # Number of iterations of the loop
 
 # Initializes the progress bar
 pb <- txtProgressBar(min = 0,      # Minimum value of the progress bar
@@ -32,11 +33,19 @@ pb <- txtProgressBar(min = 0,      # Minimum value of the progress bar
 
 #ITERATE-ADDRESSES-------------------------------------------------------------
 for(i in 1:n_iter){
-  address_x <- holders[i,"HolderAddress"]
+block_calc <- i * 10000L
+block_calc
+
+start_block <- 10990000L + block_calc
+
+end_block <- start_block + 10000L
+
+start_string <- toString(start_block)
+end_string <- toString(end_block)
+
 #API-URL-JIGSAW----------------------------------------------------------------
   API_jigsaw <- paste(acct_piece, contr_piece, drc_address,
-                      wall_line, address_x, blocks_sort, full_api, sep="")
-  
+                      start, start_block, end, end_block, full_api, sep="")
 #SEND-URL-STORE-IN-DATA-VAR----------------------------------------------------
   url <- modify_url("http://api.etherscan.io/", path = API_jigsaw)
   data <- fromJSON(url)
@@ -52,7 +61,6 @@ for(i in 1:n_iter){
   big_boi <- rbind(growin_boi, essential_columns)
   
 #FLUSH-VALUES-UPDATE-MASTER-DF-------------------------------------------------  
-  rm(address_x)
   growin_boi <- big_boi
   rm(essential_columns)
   rm(ether_data)
@@ -69,9 +77,14 @@ for(i in 1:n_iter){
 close(pb)
 
 #CONVERT-COLUMN-DATA-----------------------------------------------------------
-big_boi$result.value <-bit64::as.integer64(big_boi$result.value)
+big_boi$result.value <- substr(big_boi$result.value,1,nchar
+                               (big_boi$result.value)-18)
 
-
+big_boi$result.value[big_boi$result.value==""]<-"0"
+big_boi$result.value <- as.integer(big_boi$result.value)
+big_boi$result.timeStamp <- anytime(as.integer(big_boi$result.timeStamp))
+holders$Balance.in.DRC <- sub('\\..*', '', holders$Balance.in.DRC)
+holders$Balance.in.DRC <- as.integer(holders$Balance.in.DRC)
 #IMPORTANT-NOTE----------------------------------------------------------------
 ##  ##   ##      #####   #####     ##    #####    ##
 ##  ##           ##  ##  ##  ##   ####   ##  ##   ##
